@@ -1,6 +1,3 @@
-course := "bigdata"
-assignment := "stackoverflow"
-
 scalaVersion := "3.1.0"
 scalacOptions ++= Seq("-language:implicitConversions", "-deprecation")
 libraryDependencies ++= Seq(
@@ -29,4 +26,4 @@ def excludes(m: ModuleID): ModuleID =
 run / fork := true
 Test / fork := true
 
-Compile / resourceGenerators += downloadDataset.map(Seq(_)).taskValue
+//Compile / resourceGenerators += downloadDataset.map(Seq(_)).taskValue
