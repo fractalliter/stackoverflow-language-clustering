@@ -62,7 +62,7 @@ object StackOverflow extends StackOverflow:
 
     val means = kmeans(sampleVectors(vectors), vectors, debug = true)
     val results = clusterResults(means, vectors)
-    printResults(results)
+    printResults(results.sortBy(_._4)(Ordering.Int.reverse))
 
 /** The parsing and kmeans methods */
 class StackOverflow extends StackOverflowInterface with Serializable:
