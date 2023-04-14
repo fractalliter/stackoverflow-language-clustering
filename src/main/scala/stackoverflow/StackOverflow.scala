@@ -47,9 +47,8 @@ object StackOverflow extends StackOverflow:
 
   /** Main function */
   def main(args: Array[String]): Unit =
-    val inputFileLocation: String = "/stackoverflow/stackoverflow.csv"
-    val resource = getClass.getResourceAsStream(inputFileLocation)
-    val inputFile = Source.fromInputStream(resource)(Codec.UTF8)
+    val inputFileLocation: String = "stackoverflow.csv"
+    val inputFile = Source.fromResource(inputFileLocation)(Codec.UTF8)
 
     val lines = sc.parallelize(inputFile.getLines().toList)
     val raw = rawPostings(lines)
