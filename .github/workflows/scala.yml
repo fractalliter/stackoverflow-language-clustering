@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  comile:
+  compile-and-test:
 
     runs-on: ubuntu-latest
 
