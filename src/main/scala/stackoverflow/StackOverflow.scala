@@ -48,9 +48,8 @@ object StackOverflow extends StackOverflow:
   /** Main function */
   def main(args: Array[String]): Unit =
     val inputFileLocation: String = "stackoverflow.csv"
-    val inputFile = Source.fromResource(inputFileLocation)(Codec.UTF8)
 
-    val lines = sc.parallelize(inputFile.getLines().toList)
+    val lines = linesAsStream(sc, inputFileLocation)
     val raw = rawPostings(lines)
     val grouped = groupedPostings(raw)
     val scored = scoredPostings(grouped)
@@ -62,7 +61,7 @@ object StackOverflow extends StackOverflow:
 
     val means = kmeans(sampleVectors(vectors), vectors, debug = true)
     val results = clusterResults(means, vectors)
-    printResults(results.sortBy(_._4)(Ordering.Int.reverse))
+    printResults(results)
 
 /** The parsing and kmeans methods */
 class StackOverflow extends StackOverflowInterface with Serializable:
@@ -110,6 +109,16 @@ class StackOverflow extends StackOverflowInterface with Serializable:
   // Parsing utilities:
   //
   //
+
+  /**
+   * Loads lines of data as stream from the file
+   * @param sparkContext SparkContext
+   * @param inputFileLocation String
+   * @return RDD[String]
+   */
+  def linesAsStream(sparkContext: SparkContext, inputFileLocation: String): RDD[String] =
+    val fileData = Source.fromResource(inputFileLocation)(Codec.UTF8)
+    sparkContext.parallelize(fileData.getLines().toList)
 
   /** Load postings from the given file */
   def rawPostings(lines: RDD[String]): RDD[Posting] =
@@ -346,7 +355,7 @@ class StackOverflow extends StackOverflowInterface with Serializable:
       (langLabel, langPercent, clusterSize, medianScore)
     }
 
-    median.collect().map(_._2).sortBy(_._4)
+    median.collect().map(_._2).sortBy(_._4)(Ordering.Int.reverse)
 
   def printResults(results: Array[(String, Double, Int, Int)]): Unit =
     println("Resulting clusters:")
