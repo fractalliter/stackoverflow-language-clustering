@@ -16,6 +16,8 @@ object StackOverflowSuite:
 class StackOverflowSuite extends munit.FunSuite:
   import StackOverflowSuite.*
 
+  val fileLocation = "stackoverflow.csv"
+
   lazy val testObject = new StackOverflow {
     override val langs =
       List(
@@ -50,6 +52,46 @@ class StackOverflowSuite extends munit.FunSuite:
         case _: Throwable => false
       }
     assert(instantiatable, "Can't instantiate a StackOverflow object")
+  }
+
+  test("Data can be loaded from the file"){
+   val lines =  testObject.linesAsStream(sc, fileLocation)
+    assert(lines != null)
+    assert(!lines.isEmpty())
+  }
+
+  test("Posts can be loaded from file"){
+    val lines =  testObject.linesAsStream(sc, fileLocation)
+    val posts = testObject.rawPostings(lines)
+    assert(posts != null)
+    assert(!posts.isEmpty())
+  }
+  
+  test("Can group questions and answers together"){
+    val lines = testObject.linesAsStream(sc, fileLocation)
+    val posts = testObject.rawPostings(lines)
+    val groupedPosts = testObject.groupedPostings(posts)
+    assert(groupedPosts != null)
+    assert(!groupedPosts.isEmpty())
+  }
+  
+  test("Can compute max score for each post"){
+    val lines = testObject.linesAsStream(sc, fileLocation)
+    val posts = testObject.rawPostings(lines)
+    val groupedPosts = testObject.groupedPostings(posts)
+    val maxScores = testObject.scoredPostings(groupedPosts)
+    assert(maxScores != null)
+    assert(!maxScores.isEmpty())
+  }
+  
+  test("Can computes vectors for kmeans"){
+    val lines = testObject.linesAsStream(sc, fileLocation)
+    val posts = testObject.rawPostings(lines)
+    val groupedPosts = testObject.groupedPostings(posts)
+    val maxScores = testObject.scoredPostings(groupedPosts)
+    val vectors = testObject.vectorPostings(maxScores)
+    assert(vectors != null)
+    assert(!vectors.isEmpty())
   }
 
   import scala.concurrent.duration.given
